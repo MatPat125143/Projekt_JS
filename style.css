@@ -1,0 +1,130 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+#quiz-container {
+    font-family: 'Arial', sans-serif;
+    background-color: #282c35;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+    width: 100%;
+}
+
+.panel {
+    display: none;
+    max-width: 80vh;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.panel h1 {
+    color: #333;
+    margin-bottom: 20px; 
+    font-size: 70px;
+    text-shadow: 1px 1px 2px #333333; 
+}
+
+.panel p {
+    color: #333;
+    font-weight: bolder;
+    margin-bottom: 10px; 
+    font-size: 25px; 
+}
+
+.show {
+    display: block;
+}
+
+#start-panel {
+    max-width: 80vh;
+}
+
+#quiz-panel {
+    max-width: 80vh;
+    background-color: #f9f9f9;
+}
+
+#quiz {
+    padding: 20px;
+}
+
+.option-button {
+    background-color: #fff;
+    color: #333;
+    padding: 15px;
+    margin: 10px;
+    border: 2px solid #333;
+    border-radius: 8px;
+    width: calc(50% - 20px);
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out, border-color 0.3s ease-in-out, font-size 0.3s ease-in-out;
+    font-size: 20px; 
+}
+
+.option-button:hover {
+    background-color: #555;
+    color: #fff;
+    border-color: #fff;
+}
+
+#result-panel {
+    background-color: #f9f9f9;
+    text-align: center;
+}
+
+#start-button, #play-again-button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 8px 20px;
+    margin-top: auto;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+    font-size: 20px; 
+}
+
+#start-button:hover, #play-again-button:hover {
+    background-color: #45a049;
+}
+
+#player-name {
+    width: 70%;
+    padding: 10px;
+    max-height: 50px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    font-size: 18px;
+}
+
+#highscore-panel {
+    background-color: #c2c1c1;
+}
+
+#highscore-panel table {
+    border: 2px solid #333;
+    border-radius: 5px;
+    width: 100%;
+    text-align: center;
+}
+
+@media (max-width: 765px) {
+    .panel {
+        width: 80%;
+    }
+
+    .option-button {
+        width: calc(100% - 20px);
+        margin: 10px 0;
+    }
+}

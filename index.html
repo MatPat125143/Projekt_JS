@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Quiz game">
+  <meta name="keywords" content="game, quiz, quiz-game">
+  <meta name="author" content="Patryk Matykowski">
+  <title>Quiz Game</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <main>
+
+    <section id="quiz-container">
+
+      <div id="start-panel" class="panel show">
+        <h1>🔎 Quiz Game</h1>
+        <p>Przed tobą pojawi się 10 pytań. Do wyboru będziesz miał tylko 4 odpowiedzi, jedna z nich jest poprawna.</p>
+        <p>Powodzenia!</p>
+
+        <input type="text" id="player-name" placeholder="Twoje imię">
+        <button id="start-button" onclick="startQuiz()">Start Quiz</button>
+      </div>
+
+      <div id="quiz-panel" class="panel hide">
+        <div id="quiz"></div>
+      </div>
+
+      <div id="result-panel" class="panel hide">
+        <div id="result"></div>
+        <button id="play-again-button" onclick="playAgain()">Zagraj jeszcze raz</button>
+        <br>
+        <h2>Tablica wyników</h2>
+        <div id="highscore-panel"></div>
+      </div>
+
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+
+</body>
+
+</html>

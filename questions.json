@@ -1,0 +1,52 @@
+[
+    {
+        "question": "Ile kontynentów jest na świecie?",
+        "options": ["4", "5", "6", "7"],
+        "correctAnswer": "7"
+      },
+      {
+        "question": "Które zwierzę jest największe na świecie?",
+        "options": ["Słoń", "Płetwal błękitny", "Goryl", "Żyrafa"],
+        "correctAnswer": "Płetwal błękitny"
+      },
+      {
+        "question": "Jaka jest stolica Japonii?",
+        "options": ["Pekin", "Seul", "Tokio", "Osaka"],
+        "correctAnswer": "Tokio"
+      },
+      {
+        "question": "Który pierwiastek chemiczny oznaczony jest symbolem 'O'?",
+        "options": ["Tlen", "Azot", "Węgiel", "Siarka"],
+        "correctAnswer": "Tlen"
+      },
+      {
+        "question": "Które państwo jest największe pod względem powierzchni?",
+        "options": ["Rosja", "Kanada", "Stany Zjednoczone", "Chiny"],
+        "correctAnswer": "Rosja"
+      },
+      {
+        "question": "Ile wynosi pierwiastek z 144?",
+        "options": ["10", "12", "14", "16"],
+        "correctAnswer": "12"
+      },
+      {
+        "question": "Które z poniższych to instrumenty dęte?",
+        "options": ["Skrzypce", "Trąbka", "Gitara", "Fortepian"],
+        "correctAnswer": "Trąbka"
+      },
+      {
+        "question": "W którym roku miała miejsce pierwsza misja na Księżyc?",
+        "options": ["1961", "1967", "1969", "1973"],
+        "correctAnswer": "1969"
+      },
+      {
+        "question": "Który gaz jest najbardziej obecny w atmosferze Ziemi?",
+        "options": ["Azot", "Tlen", "Argon", "CO2"],
+        "correctAnswer": "Azot"
+      },
+      {
+        "question": "Jak nazywa się najdłuższa rzeka na świecie?",
+        "options": ["Nil", "Amazonka", "Jangcy", "Missisipi"],
+        "correctAnswer": "Nil"
+      }
+]

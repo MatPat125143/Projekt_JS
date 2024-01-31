@@ -1,0 +1,334 @@
+/**
+ * @fileoverview Opis programu "Quiz Game".
+ */
+
+/**
+ * Index bierzącego pytania.
+ * @type {number}
+ */
+var currentQuestion = 0;
+
+/**
+ * Bieżący wynik gracza.
+ * @type {number}
+ */
+var score = 0;
+
+/**
+ * Lista pytań, które zostały zadane w bieżącej sesji quizu.
+ * @type {Array}
+ */
+var askedQuestions = [];
+
+/**
+ * Imie gracza.
+ * @type {string}
+ */
+var playerName = "";
+
+/**
+ * Lista wyników pobrana z localStorage po każdej grze.
+ * @type {Array}
+ */
+var highscores = JSON.parse(localStorage.getItem('highscores')) || [];
+
+/**
+ * Lista wszystkich pytań dostępnych w quizie.
+ * @type {Array}
+ */
+var questions = [];
+
+/**
+ * @function startQuiz
+ * @description Rozpoczęcie gry rozpoczyna się od pobrania nazwy gracza. Jeśli gracz nie podał swojej nazwy, zostanie
+ * wyświetlony alert komunikujący o koniczności wpisaniania imienia. Po podaniu imienia i rozpoczęciu gry, zostaje schowany start-panel
+ * a odsłonięty quiz-panel. Funkcja ta wywołuje kolejną funkcje loadQuestions.
+ * @param {string} playerName - Pobiera wartość wpisaną przez użytkownika w polu tekstowym o identyfikatorze "player-name".
+ */
+function startQuiz() {
+
+    var startPanel = document.getElementById("start-panel"); //Panel startowy aplikacji quizowej.
+    var quizPanel = document.getElementById("quiz-panel"); //Panel quizu w aplikacji.
+
+    playerName = document.getElementById("player-name").value;
+
+    //Sprawdzenie czy gracz podał imie.
+    if (!playerName) {
+        alert("Podaj swoje imię przed rozpoczęciem quizu!");
+        return;
+    }
+    
+    startPanel.classList.remove("show");
+    quizPanel.classList.add("show");
+
+    loadQuestions();
+}
+
+/**
+ * @function loadQuestions
+ * @description Funckja pobiera zbiór pytań z odpowiedziami z pliku "questions.json" i przekazuje je do zmiennej questions
+ */
+function loadQuestions() {
+    fetch('questions.json')
+        .then(response => response.json())
+        .then(data => {
+            console.log(data); // Sprawdzenie czy baza się załadowała 
+            questions = data;
+            loadQuestion();
+        })
+        .catch(error => console.error('Error loading questions:', error));
+}
+
+/**
+ * @function loadQuestion
+ * @description Ładuje pojedyncze pytanie do quizu, aktualizuje zawartość panelu quizu.
+ * Jeśli wszystkie pytania zostały już zadane, wywołuje funkcję showResult().
+ */
+function loadQuestion() {
+    var quizContainer = document.getElementById("quiz"); //Kontener HTML reprezentujący obszar wyświetlania pytań w quizie.
+    var resultPanel = document.getElementById("result-panel"); //Panel HTML reprezentujący obszar wyświetlania wyników quizu.
+
+    questions = Shuffle(questions); //Tasuje pytania.
+
+    //Sprawdzenie czy wszystkie pytania zostały zadane graczowi.
+    if (askedQuestions.length === questions.length) {
+        showResult();
+        return;
+    }
+    
+    //Filtruje pytania, aby uzyskać listę jeszcze niezadanych pytań.
+    var notAskedQuestions = questions.filter(function (q) {
+        return askedQuestions.indexOf(q) === -1;
+    });
+
+    //Wybiera bieżące pytanie z listy jeszcze niezadanych.
+    var currentQ = notAskedQuestions[0];
+    askedQuestions.push(currentQ);
+
+    var shuffledOptions = Shuffle(currentQ.options); //Tasuje odpowiedzi.
+
+    // Aktualizuje zawartość kontenera quizu, wyświetlając onwe pytanie i nowe opcje odpowiedzi w formie przycisków.
+    quizContainer.innerHTML = "<h2>" + currentQ.question + "</h2>";
+    for (var i = 0; i < shuffledOptions.length; i++) {
+        quizContainer.innerHTML += '<button class="option-button" onclick="selectAnswer(this)" data-answer="' + shuffledOptions[i] + '">' + shuffledOptions[i] + '</button>';
+    }
+
+    // Ukrywa panel wyników.
+    resultPanel.classList.add("hide");
+}
+
+/**
+ * @function Shuffle
+ * @description Funckja odpowiedzialna za tasowanie pytań oraz odpowiedzi.
+ * @param {Array} array - Tablica do przetasowania.
+ * @returns {Array} Przetasowana tablica.
+ */
+function Shuffle(array) {
+    for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+    return array;
+}
+
+/**
+ * @function selectAnswer
+ * @description Funckja obsługująca wybór odpowiedzi, aktualizująca wynik, i następne pytanie.
+ * @param {HTMLElement} button - Przycisk reprezentujący poprawną odpowiedź.
+ */
+function selectAnswer(button) {
+    var selectedAnswer = button.getAttribute("data-answer"); //Zmienna przechowująca wybraną odpowiedź.
+    var currentQ = askedQuestions[askedQuestions.length - 1]; //Obiekt reprezentujący bieżące pytanie.
+
+    // Sprawdzenie, czy odpowiedź jest poprawna i aktualizuje wynik.
+    if (selectedAnswer === currentQ.correctAnswer) {
+        score++;
+    }
+
+    // Wyłączenie tymczasowe wszystkich przycisków odpowiedzi, aby zapobiec dalszym wyborom odpowiedzi.
+    var answerButtons = document.querySelectorAll('.option-button');
+    answerButtons.forEach(function (btn) {
+        btn.disabled = true;
+    });
+
+    // Podświetlenie wybranego przez gracza przycisku odpowiedzi uznanej za poprawną.
+    // Tło przycisku zmienia się na kolor zielony jeśli odpowiedź jest poprawna,
+    // w rpzeciwnym wypadku zmienia się na czerwone.
+    highlightAnswer(button, selectedAnswer === currentQ.correctAnswer ? "green" : "red");
+
+    // Opóźnia przejście do następnego pytania lub wyświetlenia wyniku.
+    setTimeout(function () {
+
+        // Resetuje kolory zaznaczonej odpowiedzi na domyślny.
+        resetAnswerColors();
+        currentQuestion++;
+
+        if (currentQuestion < questions.length) {
+            loadQuestion();
+        } else {
+            showResult();
+        }
+    }, 1500); //Czas przejścia do kolejnego pytania (1.5 sek)
+}
+
+/**
+ * @function highlightAnswer.
+ * @description Podświetlenie przyciusku odpowiedzi po najechaniu na niego.
+ * @param {HTMLElement} button - Przycisk do podświetlenia.
+ * @param {string} color - Kolor na jaki ma być przycisk podświetlony.
+ */
+function highlightAnswer(button, color) {
+    button.style.backgroundColor = color;
+}
+
+/**
+ * @function resetAnswerColors
+ * @description Reset koloru przycisku na domyślny kolor.
+ */
+function resetAnswerColors() {
+    var buttons = document.querySelectorAll('.option-button');
+    buttons.forEach(function (button) {
+        button.style.backgroundColor = "";
+    });
+}
+
+/**
+ * @function showResult
+ * @description Funkcja wyświetlająca wynik testu, aktualizuje wyniki gracza, zapisuje wynik do lokalnego magazynu danych,
+ * i wyświetla tabelę wyników graczy.
+ */
+function showResult() {
+    var quizPanel = document.getElementById("quiz-panel"); //Panel z pytaniami quizowymi.
+    var resultPanel = document.getElementById("result-panel"); //Panel wyników.
+    var resultContainer = document.getElementById("result"); //Kontener wyników.
+
+    quizPanel.classList.remove("show"); // Ukrywa panel z pytaniami quizowymi.
+    resultPanel.classList.add("show"); // Wyświetla panel wyników.
+
+    //Opis wyniku gracza.
+    var playerResult = getResultDescription(); 
+    resultContainer.innerHTML = playerResult + "<br/>" + "Twój wynik to: " + score + " z " + questions.length;
+
+    // Dodaje aktualny wynik gracza do listy wyników.
+    highscores.push({ name: playerName, score: score });
+
+    // Zapisuje listę wyników do lokalnego magazynu danych.
+    localStorage.setItem('highscores', JSON.stringify(highscores));
+
+    var playAgainButton = document.getElementById("play-again-button"); //Przycisk do ponownego rozpoczęcia quizu.
+    resultPanel.style.fontSize = "25px"; //Ustawienie rozmiaru czcionki wyniku końcowego
+    playAgainButton.style.marginTop = "20px"; //Ustawienei marginesu górnego
+    playAgainButton.style.marginBottom = "20px"; //Ustawienie marginesu dolnego
+
+    showHighscores();
+}
+
+/**
+ * @function getResultDescription 
+ * @description Zwraca opisowy komunikat dotyczący wyniku gracza na podstawie uzyskanego wyniku.
+ * @returns {string} Opisowa wiadomość dotycząca osiągnięć gracza.
+ */
+function getResultDescription() {
+    if (score <= 3) {
+        return "Nieźle się starałeś, ale warto jeszcze poczytać.";
+    } else if (score >= 4 && score <= 7) {
+        return "Dobra robota! Masz już sporo wiedzy.";
+    } else if (score >= 8) {
+        return "Fantastycznie! Jesteś prawdziwym ekspertem!";
+    }
+}
+
+/**
+ * @function playAgain
+ * @description Funkcja resetująca stan quizu do początkowego, umożliwiając graczowi ponowne rozpoczęcie gry.
+ */
+function playAgain() {
+    var startPanel = document.getElementById("start-panel"); //Panel startowego.
+    var quizPanel = document.getElementById("quiz-panel"); //Panel z pytaniami quizowymi
+    var resultPanel = document.getElementById("result-panel"); //Panel wynikowy
+
+    startPanel.classList.add("show");
+    quizPanel.classList.remove("show");
+    resultPanel.classList.remove("show");
+
+    currentQuestion = 0;
+    score = 0;
+    askedQuestions = [];
+    playerName = "";
+}
+
+/**
+ * @function saveScoreToLocalStorage
+ * @description Zapis wyniku gracza do lokalnego magazynu danych.
+ * @param {string} playerName - Imię gracza.
+ * @param {number} playerScore - Wynik gracza.
+ */
+function saveScoreToLocalStorage(playerName, playerScore) {
+
+    //Lista wyników graczy pobrana z lokalnego magazynu danych.
+    var highscores = JSON.parse(localStorage.getItem("highscores")) || [];
+
+    highscores.push({
+        name: playerName,
+        score: playerScore
+    });
+
+    // Zapisuje zaktualizowaną listę wyników do lokalnego magazynu danych.
+    localStorage.setItem("highscores", JSON.stringify(highscores));
+}
+
+/**
+ * @function showHighscores
+ * @description Funkcja pobierająca listę wyników z lokalnego magazynu danych, sortuje je malejąco według wyników
+ * i tworzy tabelę HTML wyświetlającą imiona graczy oraz ich wyniki. Następnie tabela jest dodawana do panelu wyników.
+ */
+function showHighscores() {
+    var highscorePanel = document.getElementById("highscore-panel"); //Element panelu wynikowego
+    var existingTable = document.getElementById("highscore-table"); //Tabela wyników
+
+    if (existingTable) {
+        highscorePanel.removeChild(existingTable);
+    }
+
+    highscores.sort(function (a, b) {
+        return b.score - a.score;
+    });
+
+    var table = document.createElement("table");
+    table.setAttribute("id", "highscore-table");
+    table.classList.add("highscore-table");
+
+    var thead = table.createTHead();
+    var row = thead.insertRow();
+    var nameHeader = row.insertCell(0);
+    var scoreHeader = row.insertCell(1);
+
+    nameHeader.innerHTML = "<b>Imię</b>";
+    scoreHeader.innerHTML = "<b>Wynik</b>";
+
+    var tbody = table.createTBody();
+
+    for (var i = 0; i < highscores.length; i++) {
+        var highscore = highscores[i];
+        var row = tbody.insertRow();
+        var nameCell = row.insertCell(0);
+        var scoreCell = row.insertCell(1);
+
+        nameCell.innerHTML = highscore.name;
+        scoreCell.innerHTML = highscore.score;
+    }
+
+    highscorePanel.appendChild(table);
+    highscorePanel.style.display = "block";
+}
+
+/**
+ * @event
+ * @description Zadarzenie to czyszczenie lokalnego magazynu danych (localStorage)
+ * w celu usunięcia przechowywanych informacji w tabeli.
+ */
+window.addEventListener('beforeunload', function () {
+    localStorage.clear();
+});

@@ -1,0 +1,352 @@
+/* 
+Quiz Game
+
+## Kod HTML:
+- `<section id="quiz-container">` - Sekcja dla wszystkich boksów kontenerów.
+- `<div id="start-panel" class="panel show">` - Panel startowy gry.
+    - `<input />` - Pole pobierające imie gracza.
+    - `<button />` - Przyciski zaczynający, gre.
+- `<div id="quiz-panel" class="panel hide">` - Panel główny quizu.
+ - `<div id="quiz">` - Panel gdzie są wyświetlane pytania.
+- `<div id="result-panel" class="panel hide">` - Panel wyników.
+    - `<div id="result">` - Kontenr wyświetlający wyniki quizu.
+    - `<button />` - Przycisk powrotu do panelu startowego.
+    - `<div id="highscore-panel">` - Kontener do wyświetlania tabeli wyników.
+- `<script src="script.js">` - Link do pliku javascript.
+
+Markup:
+  <main>
+    <section id="quiz-container">
+      <div id="start-panel" class="panel show">
+        <h1>🔎 Quiz Game</h1>
+        <p>Przed tobą pojawi się 10 pytań. Do wyboru będziesz miał tylko 4 odpowiedzi, jedna z nich jest poprawna.</p>
+        <p>Powodzenia!</p>
+        <input type="text" id="player-name" placeholder="Twoje imię">
+        <button id="start-button" onclick="startQuiz()">Start Quiz</button>
+      </div>
+      <div id="quiz-panel" class="panel hide">
+        <div id="quiz"></div>
+      </div>
+      <div id="result-panel" class="panel hide">
+        <div id="result"></div>
+        <button id="play-again-button" onclick="playAgain()">Zagraj jeszcze raz</button>
+        <br>
+        <h2>Tablica wyników</h2>
+        <div id="highscore-panel"></div>
+      </div>
+    </section>
+  </main>
+  <script src="script.js"></script>
+
+Styleguide 1
+*/
+
+/* 
+Ustawienia globalne dla wszystkich elementów na stronie `*` .
+
+**Zastosowano resetowanie stylów, eliminując domyślne marginesy i paddingi, oraz określono pudełko jako border-box.**
+
+Styleguide: 1.1
+*/
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+/* 
+Stylizacja #quiz-contatiner 
+
+**Zdefiniowanie styli dla sekcji o id `quiz-container`.**
+Używa flexboxa do wyśrodkowania elementów w pionie i poziomie, ustawia marginez zewnętrzny i wewnętrzny na 0, wysokość na 100% widoku użytkownika oraz szerokość na 100%.
+Ustawia rodzaj czcionki i kolor tła całej sekcji.
+
+Markup: 
+    <section id="quiz-container"></section>
+
+Styleguide 1.2
+*/
+#quiz-container {
+    font-family: 'Arial', sans-serif;
+    background-color: #282c35;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+    width: 100%;
+}
+
+/* 
+Style .panel 
+
+**Zdefiniowanie styli dla klasy panel i jej składowych.**
+
+Ustawienie szerokośći na 80% widoku użytkownika, margines zewnętrzyny górny i dolny na zero, lewy i prawy automatycznie. Margines wewnętrzy ustwaniony na 30px.
+Kolor tła klasy jest białe (#fff), ma zaokrąglone rogi i posiada cień.
+Klasa .panel ustawiona jest na niewidoczną.
+
+**Składowa klasy .panel `<h1/>`**
+
+Nagłówek `h1` ustawiony ma margines zewnętrzny dolny na 20px, rozmiar czcionki na 70px, czarny kolor teksu (#333) oraz cień teksu.
+
+**Składowa klasy .panel `<p/>`**
+
+Paragraf posaida margines zewnętrzny dolby równy 10px, rozmiar czcionki 25px, pogryubienia czcionki i kolor teksu jest czarny (#333).
+
+Markup:
+    <div class="panel show"> 
+        <h1>Przykład</h1>
+        <p>przykład</p>
+    </div>
+
+Styleguide 1.3
+*/
+.panel {
+    display: none;
+    max-width: 80vh;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.panel h1 {
+    color: #333;
+    margin-bottom: 20px; 
+    font-size: 70px;
+    text-shadow: 1px 1px 2px #333333; 
+}
+
+.panel p {
+    color: #333;
+    font-weight: bolder;
+    margin-bottom: 10px; 
+    font-size: 25px; 
+}
+
+/* 
+Klasa .show
+
+Klasa ta ustawia tylko widoczność kontenera `<div id="start-panel" class="panel show">` na blok.
+
+Styleguide 1.4
+*/
+.show {
+    display: block;
+}
+
+/* 
+Style #start-panel 
+
+Ustawienie maksymalnej szerokośći panelu do 80% widoku użytkownika.
+
+Styleguide 1.5
+*/
+#start-panel {
+    max-width: 80vh;
+}
+
+/* 
+Style #quiz-panel 
+
+Ustawienie makszymalnej szerokości panelu quizu na 80% widoku użytkownika oraz koloru tła na biały (#f9f9f9).
+
+Styleguide 1.6
+*/
+#quiz-panel {
+    max-width: 80vh;
+    background-color: #f9f9f9;
+}
+
+/* 
+Style #quiz
+
+Ustawienia marginesów wewnętrznych kontenera na 20px.
+
+Styleguide 1.7
+*/
+#quiz {
+    padding: 20px;
+}
+
+
+/* 
+Style .option-button
+
+**Zdefiniowanie styli dla przycisków z odpowiedziami, które wyświetlają się podczas gry.**
+
+**.option-buton**
+
+Ustawione są szerokości przycisków na 50% - 20px możliwej szerokości ekranu użytkownika, marginesy zewnętrzne na 10px, wewnętrzne na 15px.
+Kololr tła biały (#fff), grugość obramowania na 2px, ciągłe koloru czrnego. Rozmiar teksu 20px, koloru czrnego.
+Ustawiona jest również interacja, gdzie użytkownik po najechaniu na przycisk z odpowiedzią zmienia tło, kolor teksu oraz kolor obramowania, a kursor zmienia się na kursor wskazujący.
+
+**.option-button:hover**
+
+Styl guzika po najechaniu na niego.
+Zmienia tło guzika na szary (#555), kolor obramowania i tekstu na biały (#fff).
+
+Markup: 
+    <button class="option-button">Przykład</button>
+
+Styleguide 1.8
+*/
+.option-button {
+    background-color: #fff;
+    color: #333;
+    padding: 15px;
+    margin: 10px;
+    border: 2px solid #333;
+    border-radius: 8px;
+    width: calc(50% - 20px);
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out, border-color 0.3s ease-in-out, font-size 0.3s ease-in-out;
+    font-size: 20px; 
+}
+
+.option-button:hover {
+    background-color: #555;
+    color: #fff;
+    border-color: #fff;
+}
+
+/* 
+Style #result-panel
+
+Ustawienie koloru tła na biały (#f9f9f9) oraz wyśrodkowanie teksy.
+
+Styleguide 1.9
+*/
+#result-panel {
+    background-color: #f9f9f9;
+    text-align: center;
+}
+
+
+/* 
+Style #start-button oraz #play-again-button
+
+**Zdefiniowanie styli dla przycisku startowego i restaru.**
+
+**#start-button , #play-again-button**
+Ustawienie marginesu zewnętzrebgo górnego na automatyczny, wewnętrzego górnego i dolnego na 8px, lewego i prawego na 20px.
+Kolor tła jest zielony (#4CAF50), brak obramowania oraz zaokrąglenie rogów: 8px. Rozmiar teksu 20px.
+Ustawiona jest interakcja po najechaniu: zmienia się kolor tła przycisku oraz kursor zmienia się na kursor wskazujący.
+
+**#start-button:hover , #play-again-button:hover**
+
+Zmiana koloru tła na ciemnozielony.
+
+Markup:
+    <button id="start-button" onclick="startQuiz()">Start Quiz</button>
+
+Styleguide 1.10
+*/
+#start-button, #play-again-button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 8px 20px;
+    margin-top: auto;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+    font-size: 20px; 
+}
+
+#start-button:hover, #play-again-button:hover {
+    background-color: #45a049;
+}
+
+
+/* 
+Style #player-name
+
+Ustawienia inputa pobierającego imie gracza.
+Szerokość bloku ustawiona na 70%, maksymalna wysokość 50px, margines zewnętrzny dolny 20px, wewnętrzny 10px.
+Zaokrąglenie obramowania 8px oraz rozmiar czcionki na 18px.
+
+Markup: 
+    <input type="text" id="player-name" placeholder="Przykład">
+
+Styleguide 1.11
+*/
+#player-name {
+    width: 70%;
+    padding: 10px;
+    max-height: 50px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    font-size: 18px;
+}
+
+/* 
+Style #highscore-panel
+
+Ustawienia panelu wyświetlającego wyniki graczy.
+Tło panelu: jasno szare (#c2c1c1).
+
+Styleguide 1.12
+*/
+#highscore-panel {
+    background-color: #c2c1c1;
+}
+
+/* 
+Style #highscore-panel table
+
+Style tabeli wyświetlanej w panelu wynikowym.
+Szerokość tabeli: 100%, grubość obramowania 2px, ciągłe, koloru czarnego, zaokrąglenie rogów 5px.
+Teskt wyśrodkowany.
+
+Markup: 
+    <div id="highscore-panel" class="panel show">
+        <table>
+            <tr>
+                <th>Kolumna 1</th>
+                <th>Kolumna 2</th>
+            </tr>
+            <tr>
+                <td>Dane 1</td>
+                <td>Dane 2</td>
+            </tr>
+        </table>
+    </div>
+
+Styleguide 1.13
+*/
+#highscore-panel table {
+    border: 2px solid #333;
+    border-radius: 5px;
+    width: 100%;
+    text-align: center;
+}
+
+/* 
+Style @media query
+
+**Style dla urządzeń o makszywalnej szerokości ekranu 765px.**
+
+**.panel**
+Szerokość klasy .panel : 80%.
+
+**.option-button**
+Szerokość przycisków odpowiedzi: 100% - 20px oraz marginez zewnętrzny górny i dolny 10px, lewy i prawy 0.
+
+Styleguide 1.14
+*/
+@media (max-width: 765px) {
+    .panel {
+        width: 80%;
+    }
+
+    .option-button {
+        width: calc(100% - 20px);
+        margin: 10px 0;
+    }
+}
